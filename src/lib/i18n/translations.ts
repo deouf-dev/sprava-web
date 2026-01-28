@@ -1,4 +1,174 @@
-export const translations = {
+// Define the translation structure type first
+type TranslationStructure = {
+  common: {
+    loading: string;
+    error: string;
+    unknownError: string;
+    save: string;
+    saving: string;
+    close: string;
+    cancel: string;
+    online: string;
+    offline: string;
+    user: string;
+  };
+  home: {
+    welcome: string;
+    description: string;
+    login: string;
+    createAccount: string;
+  };
+  login: {
+    title: string;
+    description: string;
+    email: string;
+    password: string;
+    submit: string;
+    submitting: string;
+    noAccount: string;
+    createAccount: string;
+    errorCredentials: string;
+  };
+  signup: {
+    title: string;
+    description: string;
+    email: string;
+    username: string;
+    password: string;
+    dateOfBirth: string;
+    submit: string;
+    submitting: string;
+    hasAccount: string;
+    login: string;
+  };
+  chat: {
+    selectConversation: string;
+    selectConversationHint: string;
+    noConversation: string;
+    loadMore: string;
+    writeMessage: string;
+    send: string;
+    removeFile: string;
+    addFile: string;
+    copy: string;
+    delete: string;
+  };
+  friends: {
+    myFriends: string;
+    title: string;
+    description: string;
+    friendsTab: string;
+    requestsTab: string;
+    searchPlaceholder: string;
+    loadingFriends: string;
+    openConversation: string;
+    minChars: string;
+    searching: string;
+    noUserFound: string;
+    alreadyFriend: string;
+    sendFriendRequest: string;
+    requestSent: string;
+    requestFailed: string;
+    openConversationFailed: string;
+    noRequests: string;
+    friendRequest: string;
+    accept: string;
+    reject: string;
+  };
+  userMenu: {
+    settings: string;
+    lightMode: string;
+    darkMode: string;
+    logout: string;
+  };
+  settings: {
+    title: string;
+    subtitle: string;
+    myProfile: string;
+    myAccount: string;
+    security: string;
+    blockedUsers: string;
+    profileDescription: string;
+    avatar: string;
+    avatarHint: string;
+    information: string;
+    bio: string;
+    bioPlaceholder: string;
+    location: string;
+    locationPlaceholder: string;
+    website: string;
+    websitePlaceholder: string;
+    sharingSettingsHint: string;
+    accountDescription: string;
+    account: string;
+    usernameLabel: string;
+    emailLabel: string;
+    dateOfBirthLabel: string;
+    newPasswordLabel: string;
+    newPasswordPlaceholder: string;
+    securityDescription: string;
+    sharingInfo: string;
+    sharingInfoHint: string;
+    whoCanSeeLocation: string;
+    whoCanSeeEmail: string;
+    whoCanSeePhone: string;
+    whoCanSeeDob: string;
+    phone: string;
+    everyone: string;
+    friendsOnly: string;
+    nobody: string;
+    securityTip: string;
+    blockedDescription: string;
+    noBlockedUsers: string;
+    blocked: string;
+    unblock: string;
+    userUnblocked: string;
+    unblockFailed: string;
+    loadBlockedFailed: string;
+    loadProfileFailed: string;
+    loadSettingsFailed: string;
+    changesSaved: string;
+    saveFailed: string;
+    avatarUpdated: string;
+    avatarUpdateFailed: string;
+  };
+  profile: {
+    title: string;
+    description: string;
+    accessDenied: string;
+    blockedMessage: string;
+    userNotFound: string;
+    loadFailed: string;
+    noInfo: string;
+  };
+  contextMenu: {
+    viewProfile: string;
+    block: string;
+    blockConfirmTitle: string;
+    blockConfirmDescription: string;
+    blocking: string;
+    blockFailed: string;
+  };
+  toasts: {
+    newFriendRequest: string;
+    friendRequestDescription: string;
+    requestAccepted: string;
+    requestAcceptedDescription: string;
+  };
+};
+
+export type Language = "fr" | "en";
+export type TranslationKeys = TranslationStructure;
+
+// Helper function for string interpolation
+export function interpolate(template: string, variables: Record<string, string>): string {
+  return Object.entries(variables).reduce(
+    (result, [key, value]) => result.replace(new RegExp(`\\{${key}\\}`, 'g'), value),
+    template
+  );
+}
+
+export const translations: Record<Language, TranslationKeys> = {
   fr: {
     // Common
     common: {
@@ -386,167 +556,4 @@ export const translations = {
       requestAcceptedDescription: "{username} added you as a friend.",
     },
   },
-} as const;
-
-export type Language = keyof typeof translations;
-
-// Define a type structure that works for all languages
-type TranslationStructure = {
-  common: {
-    loading: string;
-    error: string;
-    unknownError: string;
-    save: string;
-    saving: string;
-    close: string;
-    cancel: string;
-    online: string;
-    offline: string;
-    user: string;
-  };
-  home: {
-    welcome: string;
-    description: string;
-    login: string;
-    createAccount: string;
-  };
-  login: {
-    title: string;
-    description: string;
-    email: string;
-    password: string;
-    submit: string;
-    submitting: string;
-    noAccount: string;
-    createAccount: string;
-    errorCredentials: string;
-  };
-  signup: {
-    title: string;
-    description: string;
-    email: string;
-    username: string;
-    password: string;
-    dateOfBirth: string;
-    submit: string;
-    submitting: string;
-    hasAccount: string;
-    login: string;
-  };
-  chat: {
-    selectConversation: string;
-    selectConversationHint: string;
-    noConversation: string;
-    loadMore: string;
-    writeMessage: string;
-    send: string;
-    removeFile: string;
-    addFile: string;
-    copy: string;
-    delete: string;
-  };
-  friends: {
-    myFriends: string;
-    title: string;
-    description: string;
-    friendsTab: string;
-    requestsTab: string;
-    searchPlaceholder: string;
-    loadingFriends: string;
-    openConversation: string;
-    minChars: string;
-    searching: string;
-    noUserFound: string;
-    alreadyFriend: string;
-    sendFriendRequest: string;
-    requestSent: string;
-    requestFailed: string;
-    openConversationFailed: string;
-    noRequests: string;
-    friendRequest: string;
-    accept: string;
-    reject: string;
-  };
-  userMenu: {
-    settings: string;
-    lightMode: string;
-    darkMode: string;
-    logout: string;
-  };
-  settings: {
-    title: string;
-    subtitle: string;
-    myProfile: string;
-    myAccount: string;
-    security: string;
-    blockedUsers: string;
-    profileDescription: string;
-    avatar: string;
-    avatarHint: string;
-    information: string;
-    bio: string;
-    bioPlaceholder: string;
-    location: string;
-    locationPlaceholder: string;
-    website: string;
-    websitePlaceholder: string;
-    sharingSettingsHint: string;
-    accountDescription: string;
-    account: string;
-    usernameLabel: string;
-    emailLabel: string;
-    dateOfBirthLabel: string;
-    newPasswordLabel: string;
-    newPasswordPlaceholder: string;
-    securityDescription: string;
-    sharingInfo: string;
-    sharingInfoHint: string;
-    whoCanSeeLocation: string;
-    whoCanSeeEmail: string;
-    whoCanSeePhone: string;
-    whoCanSeeDob: string;
-    phone: string;
-    everyone: string;
-    friendsOnly: string;
-    nobody: string;
-    securityTip: string;
-    blockedDescription: string;
-    noBlockedUsers: string;
-    blocked: string;
-    unblock: string;
-    userUnblocked: string;
-    unblockFailed: string;
-    loadBlockedFailed: string;
-    loadProfileFailed: string;
-    loadSettingsFailed: string;
-    changesSaved: string;
-    saveFailed: string;
-    avatarUpdated: string;
-    avatarUpdateFailed: string;
-  };
-  profile: {
-    title: string;
-    description: string;
-    accessDenied: string;
-    blockedMessage: string;
-    userNotFound: string;
-    loadFailed: string;
-    noInfo: string;
-  };
-  contextMenu: {
-    viewProfile: string;
-    block: string;
-    blockConfirmTitle: string;
-    blockConfirmDescription: string;
-    blocking: string;
-    blockFailed: string;
-  };
-  toasts: {
-    newFriendRequest: string;
-    friendRequestDescription: string;
-    requestAccepted: string;
-    requestAcceptedDescription: string;
-  };
 };
-
-export type TranslationKeys = TranslationStructure;

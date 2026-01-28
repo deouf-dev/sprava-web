@@ -44,7 +44,9 @@ export function I18nProvider({ children }: { children: ReactNode }) {
 
   const setLanguage = useCallback((lang: Language) => {
     setLanguageState(lang);
-    localStorage.setItem("sprava_lang", lang);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("sprava_lang", lang);
+    }
   }, []);
 
   const t = translations[language];

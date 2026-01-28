@@ -9,7 +9,7 @@ import AvatarFromApi from "@/components/user/AvatarFromApi";
 import UserProfileDialog from "@/components/user/UserProfileDialog";
 import { apiFetch } from "@/lib/api/apiFetch";
 import { useAuth } from "@/lib/auth/AuthContext";
-import { useI18n } from "@/lib/i18n";
+import { useI18n, interpolate } from "@/lib/i18n";
 import {
   ContextMenu,
   ContextMenuTrigger,
@@ -160,9 +160,9 @@ export default function ConversationContextMenuItem({
       <AlertDialog open={confirmBlockOpen} onOpenChange={setConfirmBlockOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>{t.contextMenu.blockConfirmTitle.replace("{username}", otherUsername)}</AlertDialogTitle>
+            <AlertDialogTitle>{interpolate(t.contextMenu.blockConfirmTitle, { username: otherUsername })}</AlertDialogTitle>
             <AlertDialogDescription>
-              {t.contextMenu.blockConfirmDescription.replace("{username}", otherUsername)}
+              {interpolate(t.contextMenu.blockConfirmDescription, { username: otherUsername })}
             </AlertDialogDescription>
           </AlertDialogHeader>
 
