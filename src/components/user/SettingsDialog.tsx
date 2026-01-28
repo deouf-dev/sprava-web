@@ -23,6 +23,7 @@ import {
 import { cn } from "@/lib/utils";
 import { apiFetch } from "@/lib/api/apiFetch";
 import { useAuth } from "@/lib/auth/AuthContext";
+import { useI18n } from "@/lib/i18n";
 import {
   User,
   Ban,
@@ -129,6 +130,7 @@ export default function SettingsDialog({
   onOpenChange: (v: boolean) => void;
 }) {
   const { token } = useAuth();
+  const { t } = useI18n();
 
   const [tab, setTab] = useState<TabKey>("my_profile");
 
@@ -209,10 +211,10 @@ export default function SettingsDialog({
             throw new Error("no /me/profile");
           }
         } catch {
-          setError("Impossible de charger ton profil.");
+          setError(t.settings.loadProfileFailed);
         }
       } catch {
-        setError("Impossible de charger tes paramètres.");
+        setError(t.settings.loadSettingsFailed);
       } finally {
         setLoadingMe(false);
       }
@@ -252,7 +254,7 @@ export default function SettingsDialog({
           })),
         );
       } catch {
-        setError("Impossible de charger la liste des utilisateurs bloqués.");
+        setError(t.settings.loadBlockedFailed);
       } finally {
         setLoadingBlocked(false);
       }
@@ -320,9 +322,9 @@ export default function SettingsDialog({
         },
       });
 
-      setSuccess("Modifications enregistrées.");
+      setSuccess(t.settings.changesSaved);
     } catch {
-      setError("Impossible d'enregistrer les modifications.");
+      setError(t.settings.saveFailed);
     } finally {
       setSaving(false);
     }
@@ -349,9 +351,9 @@ export default function SettingsDialog({
 
       setMe((prev) => (prev ? { ...prev, avatar_id: data.avatar_id } : prev));
       invalidateUserAvatarCache(me.user_id);
-      setSuccess("Avatar mis à jour.");
+      setSuccess(t.settings.avatarUpdated);
     } catch {
-      setError("Impossible de mettre à jour l'avatar.");
+      setError(t.settings.avatarUpdateFailed);
     } finally {
       setSaving(false);
     }
@@ -369,9 +371,9 @@ export default function SettingsDialog({
         body: { friend_id: userId },
       })) as UnblockResponse;
       setBlocked((prev) => prev.filter((u) => u.id !== userId));
-      setSuccess("Utilisateur débloqué.");
+      setSuccess(t.settings.userUnblocked);
     } catch {
-      setError("Impossible de débloquer l'utilisateur.");
+      setError(t.settings.unblockFailed);
     } finally {
       setActingBlockedId(null);
     }
@@ -391,11 +393,11 @@ export default function SettingsDialog({
   function getVisibilityLabel(visibility: Visibility) {
     switch (visibility) {
       case "everyone":
-        return "Tout le monde";
+        return t.settings.everyone;
       case "friends":
-        return "Amis uniquement";
+        return t.settings.friendsOnly;
       case "nobody":
-        return "Personne";
+        return t.settings.nobody;
     }
   }
 
@@ -406,8 +408,8 @@ export default function SettingsDialog({
           {/* Sidebar */}
           <div className="w-[260px] shrink-0 border-r bg-muted/30 p-3">
             <div className="px-2 py-2">
-              <div className="text-sm font-semibold">Paramètres</div>
-              <div className="text-xs text-muted-foreground">Sprava</div>
+              <div className="text-sm font-semibold">{t.settings.title}</div>
+              <div className="text-xs text-muted-foreground">{t.settings.subtitle}</div>
             </div>
 
             <div className="mt-2 space-y-1">
@@ -421,7 +423,7 @@ export default function SettingsDialog({
                 )}
               >
                 <User className="h-4 w-4" />
-                Mon profil
+                {t.settings.myProfile}
               </button>
 
               <button
@@ -434,7 +436,7 @@ export default function SettingsDialog({
                 )}
               >
                 <IdCard className="h-4 w-4" />
-                Mon compte
+                {t.settings.myAccount}
               </button>
 
               <button
@@ -447,7 +449,7 @@ export default function SettingsDialog({
                 )}
               >
                 <Shield className="h-4 w-4" />
-                Sécurité
+                {t.settings.security}
               </button>
 
               <button
@@ -460,7 +462,7 @@ export default function SettingsDialog({
                 )}
               >
                 <Ban className="h-4 w-4" />
-                Utilisateurs bloqués
+                {t.settings.blockedUsers}
               </button>
             </div>
           </div>
@@ -470,21 +472,21 @@ export default function SettingsDialog({
             <DialogHeader className="space-y-1">
               <DialogTitle>
                 {tab === "my_profile"
-                  ? "Mon profil"
+                  ? t.settings.myProfile
                   : tab === "account"
-                    ? "Mon compte"
+                    ? t.settings.myAccount
                     : tab === "security"
-                      ? "Sécurité"
-                      : "Utilisateurs bloqués"}
+                      ? t.settings.security
+                      : t.settings.blockedUsers}
               </DialogTitle>
               <DialogDescription>
                 {tab === "my_profile"
-                  ? "Ton profil visible (bio, localisation, site) + avatar."
+                  ? t.settings.profileDescription
                   : tab === "account"
-                    ? "Identité et informations de compte."
+                    ? t.settings.accountDescription
                     : tab === "security"
-                      ? "Contrôle ce que tu partages avec les autres."
-                      : "Gère les utilisateurs que tu as bloqués."}
+                      ? t.settings.securityDescription
+                      : t.settings.blockedDescription}
               </DialogDescription>
             </DialogHeader>
 
@@ -500,7 +502,7 @@ export default function SettingsDialog({
             )}
 
             {loadingMe ? (
-              <div className="text-sm text-muted-foreground">Chargement…</div>
+              <div className="text-sm text-muted-foreground">{t.common.loading}</div>
             ) : (
               <>
                 {/* MON PROFIL */}
@@ -509,11 +511,11 @@ export default function SettingsDialog({
                     <div className="flex items-center gap-4 rounded-xl border p-4">
                       <AvatarFromApi
                         userId={me.user_id}
-                        username={me.username ?? "Utilisateur"}
+                        username={me.username ?? t.common.user}
                         size={56}
                       />
                       <div className="flex-1">
-                        <div className="text-sm font-medium">Avatar</div>
+                        <div className="text-sm font-medium">{t.settings.avatar}</div>
                         <div className="mt-2 flex items-center gap-3">
                           <Input
                             type="file"
@@ -526,52 +528,51 @@ export default function SettingsDialog({
                           />
                         </div>
                         <div className="mt-1 text-xs text-muted-foreground">
-                          PNG/JPG, max 5MB.
+                          {t.settings.avatarHint}
                         </div>
                       </div>
                     </div>
 
                     <div className="rounded-xl border p-4 space-y-4">
-                      <div className="text-sm font-semibold">Informations</div>
+                      <div className="text-sm font-semibold">{t.settings.information}</div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="bio">Bio</Label>
+                        <Label htmlFor="bio">{t.settings.bio}</Label>
                         <Textarea
                           id="bio"
                           value={bio}
                           onChange={(e) => setBio(e.target.value)}
                           disabled={saving}
-                          placeholder="Quelques mots sur toi…"
+                          placeholder={t.settings.bioPlaceholder}
                           className="min-h-[96px]"
                         />
                       </div>
 
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
-                          <Label htmlFor="location">Localisation</Label>
+                          <Label htmlFor="location">{t.settings.location}</Label>
                           <Input
                             id="location"
                             value={location}
                             onChange={(e) => setLocation(e.target.value)}
                             disabled={saving}
-                            placeholder="Ex: Paris"
+                            placeholder={t.settings.locationPlaceholder}
                           />
                         </div>
                         <div className="space-y-2">
-                          <Label htmlFor="website">Site</Label>
+                          <Label htmlFor="website">{t.settings.website}</Label>
                           <Input
                             id="website"
                             value={website}
                             onChange={(e) => setWebsite(e.target.value)}
                             disabled={saving}
-                            placeholder="https://…"
+                            placeholder={t.settings.websitePlaceholder}
                           />
                         </div>
                       </div>
 
                       <div className="text-xs text-muted-foreground">
-                        Tes paramètres de partage se trouvent dans l'onglet
-                        "Sécurité".
+                        {t.settings.sharingSettingsHint}
                       </div>
                     </div>
                   </div>
@@ -580,11 +581,11 @@ export default function SettingsDialog({
                 {/* MON COMPTE */}
                 {tab === "account" && (
                   <div className="rounded-xl border p-4 space-y-4">
-                    <div className="text-sm font-semibold">Compte</div>
+                    <div className="text-sm font-semibold">{t.settings.account}</div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <Label htmlFor="username">Nom d'utilisateur</Label>
+                        <Label htmlFor="username">{t.settings.usernameLabel}</Label>
                         <Input
                           id="username"
                           value={username}
@@ -594,7 +595,7 @@ export default function SettingsDialog({
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="mail">Email</Label>
+                        <Label htmlFor="mail">{t.settings.emailLabel}</Label>
                         <Input
                           id="mail"
                           type="email"
@@ -605,7 +606,7 @@ export default function SettingsDialog({
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="dob">Date de naissance</Label>
+                        <Label htmlFor="dob">{t.settings.dateOfBirthLabel}</Label>
                         <Input
                           id="dob"
                           type="date"
@@ -616,14 +617,14 @@ export default function SettingsDialog({
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="password">Nouveau mot de passe</Label>
+                        <Label htmlFor="password">{t.settings.newPasswordLabel}</Label>
                         <Input
                           id="password"
                           type="password"
                           value={password}
                           onChange={(e) => setPassword(e.target.value)}
                           disabled={saving}
-                          placeholder="Laisse vide pour ne pas changer"
+                          placeholder={t.settings.newPasswordPlaceholder}
                         />
                       </div>
                     </div>
@@ -634,10 +635,10 @@ export default function SettingsDialog({
                 {tab === "security" && (
                   <div className="rounded-xl border p-4 space-y-4">
                     <div className="text-sm font-semibold">
-                      Partage des informations
+                      {t.settings.sharingInfo}
                     </div>
                     <div className="text-xs text-muted-foreground">
-                      Choisis qui peut voir tes informations personnelles.
+                      {t.settings.sharingInfoHint}
                     </div>
 
                     <div className="mt-3 space-y-4">
@@ -645,10 +646,10 @@ export default function SettingsDialog({
                       <div className="flex items-center justify-between gap-4 rounded-lg border px-4 py-3">
                         <div className="min-w-0 flex-1">
                           <div className="text-sm font-medium flex items-center gap-2">
-                            Localisation
+                            {t.settings.location}
                           </div>
                           <div className="text-xs text-muted-foreground">
-                            Qui peut voir ta localisation
+                            {t.settings.whoCanSeeLocation}
                           </div>
                         </div>
                         <Select
@@ -667,19 +668,19 @@ export default function SettingsDialog({
                             <SelectItem value="everyone">
                               <div className="flex items-center gap-2">
                                 <Globe className="h-4 w-4" />
-                                Tout le monde
+                                {t.settings.everyone}
                               </div>
                             </SelectItem>
                             <SelectItem value="friends">
                               <div className="flex items-center gap-2">
                                 <Users className="h-4 w-4" />
-                                Amis uniquement
+                                {t.settings.friendsOnly}
                               </div>
                             </SelectItem>
                             <SelectItem value="nobody">
                               <div className="flex items-center gap-2">
                                 <LockKeyhole className="h-4 w-4" />
-                                Personne
+                                {t.settings.nobody}
                               </div>
                             </SelectItem>
                           </SelectContent>
@@ -690,10 +691,10 @@ export default function SettingsDialog({
                       <div className="flex items-center justify-between gap-4 rounded-lg border px-4 py-3">
                         <div className="min-w-0 flex-1">
                           <div className="text-sm font-medium flex items-center gap-2">
-                            Email
+                            {t.settings.emailLabel}
                           </div>
                           <div className="text-xs text-muted-foreground">
-                            Qui peut voir ton email
+                            {t.settings.whoCanSeeEmail}
                           </div>
                         </div>
                         <Select
@@ -712,19 +713,19 @@ export default function SettingsDialog({
                             <SelectItem value="everyone">
                               <div className="flex items-center gap-2">
                                 <Globe className="h-4 w-4" />
-                                Tout le monde
+                                {t.settings.everyone}
                               </div>
                             </SelectItem>
                             <SelectItem value="friends">
                               <div className="flex items-center gap-2">
                                 <Users className="h-4 w-4" />
-                                Amis uniquement
+                                {t.settings.friendsOnly}
                               </div>
                             </SelectItem>
                             <SelectItem value="nobody">
                               <div className="flex items-center gap-2">
                                 <LockKeyhole className="h-4 w-4" />
-                                Personne
+                                {t.settings.nobody}
                               </div>
                             </SelectItem>
                           </SelectContent>
@@ -735,10 +736,10 @@ export default function SettingsDialog({
                       <div className="flex items-center justify-between gap-4 rounded-lg border px-4 py-3">
                         <div className="min-w-0 flex-1">
                           <div className="text-sm font-medium flex items-center gap-2">
-                            Téléphone
+                            {t.settings.phone}
                           </div>
                           <div className="text-xs text-muted-foreground">
-                            Qui peut voir ton numéro
+                            {t.settings.whoCanSeePhone}
                           </div>
                         </div>
                         <Select
@@ -757,19 +758,19 @@ export default function SettingsDialog({
                             <SelectItem value="everyone">
                               <div className="flex items-center gap-2">
                                 <Globe className="h-4 w-4" />
-                                Tout le monde
+                                {t.settings.everyone}
                               </div>
                             </SelectItem>
                             <SelectItem value="friends">
                               <div className="flex items-center gap-2">
                                 <Users className="h-4 w-4" />
-                                Amis uniquement
+                                {t.settings.friendsOnly}
                               </div>
                             </SelectItem>
                             <SelectItem value="nobody">
                               <div className="flex items-center gap-2">
                                 <LockKeyhole className="h-4 w-4" />
-                                Personne
+                                {t.settings.nobody}
                               </div>
                             </SelectItem>
                           </SelectContent>
@@ -780,10 +781,10 @@ export default function SettingsDialog({
                       <div className="flex items-center justify-between gap-4 rounded-lg border px-4 py-3">
                         <div className="min-w-0 flex-1">
                           <div className="text-sm font-medium flex items-center gap-2">
-                            Date de naissance
+                            {t.settings.dateOfBirthLabel}
                           </div>
                           <div className="text-xs text-muted-foreground">
-                            Qui peut voir ta date de naissance
+                            {t.settings.whoCanSeeDob}
                           </div>
                         </div>
                         <Select
@@ -802,19 +803,19 @@ export default function SettingsDialog({
                             <SelectItem value="everyone">
                               <div className="flex items-center gap-2">
                                 <Globe className="h-4 w-4" />
-                                Tout le monde
+                                {t.settings.everyone}
                               </div>
                             </SelectItem>
                             <SelectItem value="friends">
                               <div className="flex items-center gap-2">
                                 <Users className="h-4 w-4" />
-                                Amis uniquement
+                                {t.settings.friendsOnly}
                               </div>
                             </SelectItem>
                             <SelectItem value="nobody">
                               <div className="flex items-center gap-2">
                                 <LockKeyhole className="h-4 w-4" />
-                                Personne
+                                {t.settings.nobody}
                               </div>
                             </SelectItem>
                           </SelectContent>
@@ -823,9 +824,7 @@ export default function SettingsDialog({
                     </div>
 
                     <div className="mt-4 rounded-lg bg-muted/50 p-3 text-xs text-muted-foreground">
-                      <strong>💡 Astuce :</strong> "Amis uniquement" permet à
-                      tes amis de voir tes informations. "Tout le monde" les
-                      rend visibles publiquement.
+                      {t.settings.securityTip}
                     </div>
                   </div>
                 )}
@@ -835,11 +834,11 @@ export default function SettingsDialog({
                   <div className="space-y-3">
                     {loadingBlocked ? (
                       <div className="text-sm text-muted-foreground">
-                        Chargement…
+                        {t.common.loading}
                       </div>
                     ) : blocked.length === 0 ? (
                       <div className="text-sm text-muted-foreground">
-                        Aucun utilisateur bloqué.
+                        {t.settings.noBlockedUsers}
                       </div>
                     ) : (
                       <div className="space-y-2">
@@ -858,7 +857,7 @@ export default function SettingsDialog({
                                 {u.username}
                               </div>
                               <div className="text-xs text-muted-foreground">
-                                Bloqué
+                                {t.settings.blocked}
                               </div>
                             </div>
 
@@ -867,7 +866,7 @@ export default function SettingsDialog({
                               onClick={() => unblockUser(u.id)}
                               disabled={actingBlockedId === u.id}
                             >
-                              {actingBlockedId === u.id ? "…" : "Débloquer"}
+                              {actingBlockedId === u.id ? "…" : t.settings.unblock}
                             </Button>
                           </div>
                         ))}
@@ -882,10 +881,10 @@ export default function SettingsDialog({
             {!loadingMe && tab !== "blocked" && (
               <div className="mt-6 flex justify-end gap-3">
                 <Button variant="outline" onClick={() => onOpenChange(false)}>
-                  Fermer
+                  {t.common.close}
                 </Button>
                 <Button onClick={saveAll} disabled={saving}>
-                  {saving ? "Sauvegarde…" : "Sauvegarder"}
+                  {saving ? t.common.saving : t.common.save}
                 </Button>
               </div>
             )}

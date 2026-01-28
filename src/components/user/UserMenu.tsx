@@ -15,6 +15,7 @@ import { Settings, Moon, Sun, LogOut } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth/AuthContext";
+import { useI18n } from "@/lib/i18n";
 import SettingsDialog from "./SettingsDialog";
 import AvatarFromApi from "./AvatarFromApi";
 
@@ -48,6 +49,7 @@ export function UserMenu({ username }: { username: string }) {
   const { logout, userId } = useAuth();
   const { isDark, toggle } = useDarkMode();
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const { t } = useI18n();
 
   return (
     <>
@@ -62,7 +64,7 @@ export function UserMenu({ username }: { username: string }) {
 
         <div className="min-w-0 flex-1">
           <div className="text-sm font-medium truncate">{username}</div>
-          <div className="text-xs text-muted-foreground">En ligne</div>
+          <div className="text-xs text-muted-foreground">{t.common.online}</div>
         </div>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -70,7 +72,7 @@ export function UserMenu({ username }: { username: string }) {
               type="button"
               variant="ghost"
               size="icon"
-              aria-label="Menu utilisateur"
+              aria-label={t.userMenu.settings}
             >
               <Settings className="h-5 w-5" />
             </Button>
@@ -84,7 +86,7 @@ export function UserMenu({ username }: { username: string }) {
               className="gap-2"
             >
               <Settings className="h-4 w-4" />
-              Paramètres
+              {t.userMenu.settings}
             </DropdownMenuItem>
 
             <DropdownMenuItem onClick={toggle} className="gap-2">
@@ -93,7 +95,7 @@ export function UserMenu({ username }: { username: string }) {
               ) : (
                 <Moon className="h-4 w-4" />
               )}
-              {isDark ? "Mode clair" : "Mode nuit"}
+              {isDark ? t.userMenu.lightMode : t.userMenu.darkMode}
             </DropdownMenuItem>
 
             <DropdownMenuSeparator />
@@ -106,7 +108,7 @@ export function UserMenu({ username }: { username: string }) {
               className="gap-2 text-destructive focus:text-destructive"
             >
               <LogOut className="h-4 w-4" />
-              Se déconnecter
+              {t.userMenu.logout}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

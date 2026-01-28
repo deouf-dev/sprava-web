@@ -20,6 +20,7 @@ import { useFriendRequestsSWR } from "@/hooks/useFriendRequestsSWR";
 import AvatarFromApi from "./AvatarFromApi";
 import { useConversations } from "@/hooks/useConversations";
 import { useFriends } from "@/hooks/useFriends";
+import { useI18n } from "@/lib/i18n";
 
 type UserByUsernameResponse = {
   status_code: number;
@@ -51,6 +52,7 @@ export function FriendsFinder({
 }) {
   const router = useRouter();
   const { token } = useAuth();
+  const { t } = useI18n();
 
   const [tab, setTab] = useState<"friends" | "requests">("friends");
   const [query, setQuery] = useState("");
@@ -116,7 +118,7 @@ export function FriendsFinder({
       return;
     }
 
-    const t = window.setTimeout(async () => {
+    const timer = window.setTimeout(async () => {
       try {
         setRemoteStatus("loading");
         setRemoteUser(null);
@@ -140,7 +142,7 @@ export function FriendsFinder({
       }
     }, 350);
 
-    return () => window.clearTimeout(t);
+    return () => window.clearTimeout(timer);
   }, [query, open, token, filteredFriends.length, tab]);
 
   async function sendFriendRequest() {
@@ -153,9 +155,9 @@ export function FriendsFinder({
         token,
         body: { receiver_id: remoteUser.user_id },
       })) as SendFriendRequestResponse;
-      setActionMessage(res.message || "Demande d'ami envoyée.");
+      setActionMessage(res.message || t.friends.requestSent);
     } catch {
-      setActionMessage("Impossible d'envoyer la demande.");
+      setActionMessage(t.friends.requestFailed);
     } finally {
       setSendingRequest(false);
     }
@@ -175,7 +177,7 @@ export function FriendsFinder({
       onOpenChange(false);
       router.push(`/chat/${res.conversation_id}`);
     } catch {
-      setActionMessage("Impossible d’ouvrir la conversation.");
+      setActionMessage(t.friends.openConversationFailed);
     }
   }
 
@@ -194,10 +196,9 @@ export function FriendsFinder({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[560px]">
         <DialogHeader>
-          <DialogTitle>Mes amis</DialogTitle>
+          <DialogTitle>{t.friends.title}</DialogTitle>
           <DialogDescription>
-            Recherche un ami, gère les demandes, ou ajoute quelqu’un par son nom
-            d'utilisateur.
+            {t.friends.description}
           </DialogDescription>
         </DialogHeader>
 
@@ -208,7 +209,7 @@ export function FriendsFinder({
               variant={tab === "friends" ? "default" : "outline"}
               onClick={() => setTab("friends")}
             >
-              Amis
+              {t.friends.friendsTab}
             </Button>
 
             <Button
@@ -217,7 +218,7 @@ export function FriendsFinder({
               onClick={() => setTab("requests")}
               className="gap-2"
             >
-              Demandes
+              {t.friends.requestsTab}
               {requests.items.length > 0 && (
                 <Badge className="h-5 px-2 rounded-full">
                   {requests.items.length}
@@ -233,7 +234,7 @@ export function FriendsFinder({
               <Input
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder="Rechercher un nom d'utilisateur..."
+                placeholder={t.friends.searchPlaceholder}
                 autoFocus
               />
 
@@ -248,7 +249,7 @@ export function FriendsFinder({
               <div className="max-h-[340px] overflow-auto space-y-1">
                 {friends.isLoading && (
                   <div className="py-10 text-center text-sm text-muted-foreground">
-                    Chargement de tes amis…
+                    {t.friends.loadingFriends}
                   </div>
                 )}
 
@@ -271,7 +272,7 @@ export function FriendsFinder({
                             {f.username}
                           </div>
                           <div className="text-xs text-muted-foreground">
-                            Ouvrir la conversation
+                            {t.friends.openConversation}
                           </div>
                         </div>
                       </button>
@@ -283,7 +284,7 @@ export function FriendsFinder({
                   filteredFriends.length === 0 &&
                   query.trim().length < 3 && (
                     <div className="py-10 text-center text-sm text-muted-foreground">
-                      Tape au moins 3 caractères.
+                      {t.friends.minChars}
                     </div>
                   )}
 
@@ -293,13 +294,13 @@ export function FriendsFinder({
                     <div className="py-6 space-y-2">
                       {remoteStatus === "loading" && (
                         <div className="text-center text-sm text-muted-foreground">
-                          Recherche…
+                          {t.friends.searching}
                         </div>
                       )}
 
                       {remoteStatus === "not_found" && (
                         <div className="text-center text-sm text-muted-foreground">
-                          Aucun utilisateur trouvé.
+                          {t.friends.noUserFound}
                         </div>
                       )}
 
@@ -311,7 +312,7 @@ export function FriendsFinder({
                             onClick={sendFriendRequest}
                             disabled={sendingRequest || alreadyFriend}
                             className="shrink-0"
-                            aria-label="Ajouter"
+                            aria-label={t.friends.sendFriendRequest}
                           >
                             <Plus className="h-4 w-4" />
                           </Button>
@@ -328,8 +329,8 @@ export function FriendsFinder({
                             </div>
                             <div className="text-xs text-muted-foreground">
                               {alreadyFriend
-                                ? "Déjà dans tes amis"
-                                : "Envoyer une demande d’ami"}
+                                ? t.friends.alreadyFriend
+                                : t.friends.sendFriendRequest}
                             </div>
                           </div>
 
@@ -353,13 +354,13 @@ export function FriendsFinder({
               <div className="max-h-[340px] overflow-auto space-y-1">
                 {requests.isLoading && (
                   <div className="py-10 text-center text-sm text-muted-foreground">
-                    Chargement…
+                    {t.common.loading}
                   </div>
                 )}
 
                 {!requests.isLoading && requests.items.length === 0 && (
                   <div className="py-10 text-center text-sm text-muted-foreground">
-                    Aucune demande.
+                    {t.friends.noRequests}
                   </div>
                 )}
 
@@ -377,7 +378,7 @@ export function FriendsFinder({
                     <div className="min-w-0 flex-1">
                       <div className="font-medium truncate">{u.username}</div>
                       <div className="text-xs text-muted-foreground">
-                        Demande d’ami
+                        {t.friends.friendRequest}
                       </div>
                     </div>
 
@@ -387,7 +388,7 @@ export function FriendsFinder({
                         onClick={() => acceptRequest(u.id)}
                         disabled={requests.actingId === u.id}
                       >
-                        Accepter
+                        {t.friends.accept}
                       </Button>
                       <Button
                         size="sm"
@@ -395,7 +396,7 @@ export function FriendsFinder({
                         onClick={() => rejectRequest(u.id)}
                         disabled={requests.actingId === u.id}
                       >
-                        Refuser
+                        {t.friends.reject}
                       </Button>
                     </div>
                   </div>

@@ -12,6 +12,7 @@ import {
   ContextMenuItem,
   ContextMenuSeparator,
 } from "@/components/ui/context-menu";
+import { useI18n } from "@/lib/i18n";
 
 async function copyText(text: string) {
   try {
@@ -34,6 +35,7 @@ export default function MessageList({
 }) {
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const bottomRef = useRef<HTMLDivElement | null>(null);
+  const { t } = useI18n();
 
   const isFetchingMoreRef = useRef(false);
   const shouldAutoScrollRef = useRef(true);
@@ -78,7 +80,7 @@ export default function MessageList({
         <div className="min-h-full flex flex-col justify-end gap-2 p-4">
           {hasMore && (
             <div className="py-2 text-center text-xs text-muted-foreground">
-              {loading ? "Chargement…" : "Remonte pour charger plus"}
+              {loading ? t.common.loading : t.chat.loadMore}
             </div>
           )}
 
@@ -132,7 +134,7 @@ export default function MessageList({
                     className="flex items-center gap-2"
                   >
                     <Copy className="h-4 w-4" />
-                    Copier
+                    {t.chat.copy}
                   </ContextMenuItem>
 
                   {m.isMine && (
@@ -143,7 +145,7 @@ export default function MessageList({
                         className="flex items-center gap-2 text-destructive focus:text-destructive"
                       >
                         <Trash2 className="h-4 w-4" />
-                        Supprimer
+                        {t.chat.delete}
                       </ContextMenuItem>
                     </>
                   )}

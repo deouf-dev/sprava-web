@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Paperclip } from "lucide-react";
+import { useI18n } from "@/lib/i18n";
 
 type SendResult = { messageId: number | string } | void;
 
@@ -21,6 +22,7 @@ export default function MessageComposer({
   const [content, setContent] = useState("");
   const [sending, setSending] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const { t } = useI18n();
 
   const textAreaRef = useRef<HTMLTextAreaElement | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -70,7 +72,7 @@ export default function MessageComposer({
             onClick={clearFile}
             disabled={disabled || sending}
           >
-            Retirer
+            {t.chat.removeFile}
           </Button>
         </div>
       )}
@@ -84,7 +86,7 @@ export default function MessageComposer({
           onClick={openFilePicker}
           disabled={disabled || sending}
           className="h-11 w-11 shrink-0"
-          aria-label="Ajouter un fichier"
+          aria-label={t.chat.addFile}
         >
           <Paperclip className="h-4 w-4" />
         </Button>
@@ -100,7 +102,7 @@ export default function MessageComposer({
           value={content}
           ref={textAreaRef}
           onChange={(e) => setContent(e.target.value)}
-          placeholder="Écrire un message…"
+          placeholder={t.chat.writeMessage}
           className="min-h-11 max-h-[160px] resize-none"
           disabled={disabled || sending}
           onKeyDown={(e) => {
@@ -116,7 +118,7 @@ export default function MessageComposer({
           disabled={!canSend || disabled || sending}
           className="h-11 shrink-0"
         >
-          Envoyer
+          {t.chat.send}
         </Button>
       </div>
     </Card>
