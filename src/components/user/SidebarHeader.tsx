@@ -3,9 +3,11 @@
 import { useState } from "react";
 import { Users } from "lucide-react";
 import { FriendsFinder } from "@/components/user/FriendsFinder";
+import { useI18n } from "@/lib/i18n";
 
 export default function SidebarHeader() {
   const [open, setOpen] = useState(false);
+  const { t } = useI18n();
 
   return (
     <div className="px-4 py-3 space-y-3">
@@ -22,7 +24,7 @@ export default function SidebarHeader() {
         <div className="flex h-9 w-9 items-center justify-center rounded-full bg-muted">
           <Users className="h-5 w-5 text-muted-foreground" />
         </div>
-        <div className="font-medium">Mes amis</div>
+        <div className="font-medium">{t.friends.myFriends}</div>
       </button>
 
       <FriendsFinder open={open} onOpenChange={setOpen} />

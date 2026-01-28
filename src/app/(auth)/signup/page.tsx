@@ -15,6 +15,7 @@ import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { apiFetch } from "@/lib/api/apiFetch";
+import { useI18n } from "@/lib/i18n";
 
 type SignupResponse = {
   status_code: number;
@@ -27,6 +28,7 @@ type SignupResponse = {
 export default function SignupPage() {
   const router = useRouter();
   const { login, isAuthenticated } = useAuth();
+  const { t } = useI18n();
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -61,7 +63,7 @@ export default function SignupPage() {
       login(api_token, user_id, usernameResp);
       router.push("/chat");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Erreur inconnue");
+      setError(err instanceof Error ? err.message : t.common.unknownError);
     } finally {
       setIsLoading(false);
     }
@@ -76,9 +78,9 @@ export default function SignupPage() {
 
       <Card className="w-full max-w-sm">
         <CardHeader>
-          <CardTitle>Inscription</CardTitle>
+          <CardTitle>{t.signup.title}</CardTitle>
           <CardDescription>
-            Crée ton compte pour accéder à la messagerie.
+            {t.signup.description}
           </CardDescription>
         </CardHeader>
 
@@ -91,7 +93,7 @@ export default function SignupPage() {
             )}
 
             <div className="space-y-2">
-              <Label htmlFor="email">Adresse e-mail</Label>
+              <Label htmlFor="email">{t.signup.email}</Label>
               <Input
                 id="email"
                 type="email"
@@ -103,7 +105,7 @@ export default function SignupPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="username">Nom d'utilisateur</Label>
+              <Label htmlFor="username">{t.signup.username}</Label>
               <Input
                 id="username"
                 type="text"
@@ -115,7 +117,7 @@ export default function SignupPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password">Mot de passe</Label>
+              <Label htmlFor="password">{t.signup.password}</Label>
               <Input
                 id="password"
                 type="password"
@@ -127,7 +129,7 @@ export default function SignupPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="dateOfBirth">Date de naissance</Label>
+              <Label htmlFor="dateOfBirth">{t.signup.dateOfBirth}</Label>
               <Input
                 id="dateOfBirth"
                 type="date"
@@ -138,17 +140,17 @@ export default function SignupPage() {
             </div>
 
             <Button className="w-full" type="submit" disabled={isLoading}>
-              {isLoading ? "Inscription..." : "S'inscrire"}
+              {isLoading ? t.signup.submitting : t.signup.submit}
             </Button>
 
             <div className="text-center text-sm text-muted-foreground">
-              Déjà un compte ?{" "}
+              {t.signup.hasAccount}{" "}
               <button
                 type="button"
                 onClick={() => router.push("/login")}
                 className="underline underline-offset-4"
               >
-                Se connecter
+                {t.signup.login}
               </button>
             </div>
           </form>

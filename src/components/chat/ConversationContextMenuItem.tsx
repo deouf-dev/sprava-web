@@ -9,6 +9,7 @@ import AvatarFromApi from "@/components/user/AvatarFromApi";
 import UserProfileDialog from "@/components/user/UserProfileDialog";
 import { apiFetch } from "@/lib/api/apiFetch";
 import { useAuth } from "@/lib/auth/AuthContext";
+import { useI18n, interpolate } from "@/lib/i18n";
 import {
   ContextMenu,
   ContextMenuTrigger,
@@ -56,6 +57,7 @@ export default function ConversationContextMenuItem({
 }) {
   const router = useRouter();
   const { token } = useAuth();
+  const { t } = useI18n();
 
   const [profileOpen, setProfileOpen] = useState(false);
   const [confirmBlockOpen, setConfirmBlockOpen] = useState(false);
@@ -78,7 +80,7 @@ export default function ConversationContextMenuItem({
 
       if (isSelected) router.push("/chat");
     } catch {
-      setBlockError("Impossible de bloquer cet utilisateur.");
+      setBlockError(t.contextMenu.blockFailed);
     } finally {
       setBlocking(false);
     }
@@ -131,7 +133,7 @@ export default function ConversationContextMenuItem({
             className="flex items-center gap-2"
           >
             <UserRound className="h-4 w-4" />
-            Afficher le profil
+            {t.contextMenu.viewProfile}
           </ContextMenuItem>
 
           <ContextMenuSeparator />
@@ -141,7 +143,7 @@ export default function ConversationContextMenuItem({
             className="flex items-center gap-2 text-destructive focus:text-destructive"
           >
             <Ban className="h-4 w-4" />
-            Bloquer
+            {t.contextMenu.block}
           </ContextMenuItem>
         </ContextMenuContent>
       </ContextMenu>
@@ -158,10 +160,9 @@ export default function ConversationContextMenuItem({
       <AlertDialog open={confirmBlockOpen} onOpenChange={setConfirmBlockOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Bloquer {otherUsername} ?</AlertDialogTitle>
+            <AlertDialogTitle>{interpolate(t.contextMenu.blockConfirmTitle, { username: otherUsername })}</AlertDialogTitle>
             <AlertDialogDescription>
-              {otherUsername} ne pourra plus te contacter ni voir ton profil
-              selon tes réglages.
+              {interpolate(t.contextMenu.blockConfirmDescription, { username: otherUsername })}
             </AlertDialogDescription>
           </AlertDialogHeader>
 
@@ -170,14 +171,14 @@ export default function ConversationContextMenuItem({
           )}
 
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={blocking}>Annuler</AlertDialogCancel>
+            <AlertDialogCancel disabled={blocking}>{t.common.cancel}</AlertDialogCancel>
             <AlertDialogAction asChild>
               <Button
                 variant="destructive"
                 disabled={blocking}
                 onClick={blockUser}
               >
-                {blocking ? "Blocage…" : "Bloquer"}
+                {blocking ? t.contextMenu.blocking : t.contextMenu.block}
               </Button>
             </AlertDialogAction>
           </AlertDialogFooter>

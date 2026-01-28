@@ -15,6 +15,7 @@ import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { apiFetch } from "@/lib/api/apiFetch";
+import { useI18n } from "@/lib/i18n";
 
 type LoginResponse = {
   user_id: number;
@@ -27,6 +28,7 @@ type LoginResponse = {
 export default function LoginPage() {
   const router = useRouter();
   const { login, isAuthenticated } = useAuth();
+  const { t } = useI18n();
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -51,13 +53,13 @@ export default function LoginPage() {
       })) as LoginResponse;
 
       if (!response.api_token) {
-        throw new Error("Erreur de connexion, vérifier vos identifiants.");
+        throw new Error(t.login.errorCredentials);
       }
 
       login(response.api_token, response.user_id, response.username);
       router.push("/chat");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Erreur inconnue");
+      setError(err instanceof Error ? err.message : t.common.unknownError);
     } finally {
       setIsLoading(false);
     }
@@ -71,8 +73,8 @@ export default function LoginPage() {
       </div>
       <Card className="w-full max-w-sm">
         <CardHeader>
-          <CardTitle>Connexion</CardTitle>
-          <CardDescription>Accède à ta messagerie.</CardDescription>
+          <CardTitle>{t.login.title}</CardTitle>
+          <CardDescription>{t.login.description}</CardDescription>
         </CardHeader>
 
         <CardContent>
@@ -84,7 +86,7 @@ export default function LoginPage() {
             )}
 
             <div className="space-y-2">
-              <Label htmlFor="email">Adresse e-mail</Label>
+              <Label htmlFor="email">{t.login.email}</Label>
               <Input
                 id="email"
                 type="email"
@@ -96,7 +98,7 @@ export default function LoginPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password">Mot de passe</Label>
+              <Label htmlFor="password">{t.login.password}</Label>
               <Input
                 id="password"
                 type="password"
@@ -108,17 +110,17 @@ export default function LoginPage() {
             </div>
 
             <Button className="w-full" type="submit" disabled={isLoading}>
-              {isLoading ? "Connexion..." : "Se connecter"}
+              {isLoading ? t.login.submitting : t.login.submit}
             </Button>
 
             <div className="text-center text-sm text-muted-foreground">
-              Pas encore de compte ?{" "}
+              {t.login.noAccount}{" "}
               <button
                 type="button"
                 onClick={() => router.push("/signup")}
                 className="underline underline-offset-4"
               >
-                Créer un compte
+                {t.login.createAccount}
               </button>
             </div>
           </form>

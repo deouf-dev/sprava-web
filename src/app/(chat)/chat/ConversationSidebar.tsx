@@ -9,6 +9,7 @@ import { useAuth } from "@/lib/auth/AuthContext";
 import { useRouter, usePathname } from "next/navigation";
 import UserMenu from "@/components/user/UserMenu";
 import ConversationContextMenuItem from "@/components/chat/ConversationContextMenuItem";
+import { useI18n } from "@/lib/i18n";
 
 export default function ConversationSidebar() {
   const [selectedId, setSelectedId] = useState<number | null>(null);
@@ -16,6 +17,7 @@ export default function ConversationSidebar() {
   const { username } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
+  const { t } = useI18n();
 
   const {
     conversations,
@@ -40,7 +42,7 @@ export default function ConversationSidebar() {
           <div className="space-y-1 pt-2">
             {loading && (
               <div className="p-4 text-center text-sm text-muted-foreground">
-                Chargement…
+                {t.common.loading}
               </div>
             )}
 
@@ -52,7 +54,7 @@ export default function ConversationSidebar() {
 
             {!loading && !error && convUI.length === 0 && (
               <div className="p-4 text-center text-sm text-muted-foreground">
-                Aucune conversation.
+                {t.chat.noConversation}
               </div>
             )}
 
@@ -90,7 +92,7 @@ export default function ConversationSidebar() {
         </ScrollArea>
       </div>
 
-      <UserMenu username={username ?? "Utilisateur"} />
+      <UserMenu username={username ?? t.common.user} />
     </div>
   );
 }

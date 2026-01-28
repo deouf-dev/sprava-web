@@ -3,9 +3,11 @@
 import { useRouter } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { useI18n } from "@/lib/i18n";
 
 export default function HomePage() {
   const router = useRouter();
+  const { t } = useI18n();
 
   return (
     <div className="relative min-h-[100dvh] w-full flex items-center justify-center bg-muted/40 p-4">
@@ -20,16 +22,16 @@ export default function HomePage() {
         <CardContent className="py-10 flex flex-col items-center text-center gap-6">
           <div className="space-y-2">
             <h1 className="text-2xl font-semibold tracking-tight">
-              Bienvenue sur Sprava
+              {t.home.welcome}
             </h1>
             <p className="text-sm text-muted-foreground">
-              Une messagerie simple, rapide et moderne.
+              {t.home.description}
             </p>
           </div>
 
           <div className="w-full flex flex-col gap-3">
             <Button className="w-full" onClick={() => router.push("/login")}>
-              Se connecter
+              {t.home.login}
             </Button>
 
             <Button
@@ -37,7 +39,7 @@ export default function HomePage() {
               className="w-full"
               onClick={() => router.push("/signup")}
             >
-              Créer un compte
+              {t.home.createAccount}
             </Button>
           </div>
         </CardContent>

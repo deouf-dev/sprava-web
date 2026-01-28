@@ -14,6 +14,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import AvatarFromApi from "@/components/user/AvatarFromApi";
 import { apiFetch } from "@/lib/api/apiFetch";
 import { useAuth } from "@/lib/auth/AuthContext";
+import { useI18n } from "@/lib/i18n";
 import { Globe, Mail, Phone, MapPin } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
@@ -49,6 +50,7 @@ export default function UserProfileDialog({
   isOnline?: boolean;
 }) {
   const { token } = useAuth();
+  const { t } = useI18n();
   const [profile, setProfile] = useState<UserProfileResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [state, setState] = useState<"ok" | "blocked" | "not_found" | "error">(
@@ -112,9 +114,9 @@ export default function UserProfileDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[560px]">
         <DialogHeader>
-          <DialogTitle>Profil</DialogTitle>
+          <DialogTitle>{t.profile.title}</DialogTitle>
           <DialogDescription>
-            Informations visibles selon les réglages de partage.
+            {t.profile.description}
           </DialogDescription>
         </DialogHeader>
 
@@ -126,8 +128,8 @@ export default function UserProfileDialog({
                 "absolute -bottom-0.5 -right-0.5 h-3.5 w-3.5 rounded-full border-2 border-background " +
                 (isOnline ? "bg-emerald-500" : "bg-muted-foreground/40")
               }
-              aria-label={isOnline ? "En ligne" : "Hors ligne"}
-              title={isOnline ? "En ligne" : "Hors ligne"}
+              aria-label={isOnline ? t.common.online : t.common.offline}
+              title={isOnline ? t.common.online : t.common.offline}
             />
           </div>
 
@@ -143,7 +145,7 @@ export default function UserProfileDialog({
 
             {state === "blocked" && (
               <div className="mt-1">
-                <Badge variant="destructive">Accès refusé</Badge>
+                <Badge variant="destructive">{t.profile.accessDenied}</Badge>
               </div>
             )}
           </div>
@@ -161,19 +163,19 @@ export default function UserProfileDialog({
 
         {!loading && state === "blocked" && (
           <div className="rounded-xl border p-4 text-sm">
-            Tu ne peux pas voir ce profil (tu es bloqué).
+            {t.profile.blockedMessage}
           </div>
         )}
 
         {!loading && state === "not_found" && (
           <div className="rounded-xl border p-4 text-sm">
-            Utilisateur introuvable.
+            {t.profile.userNotFound}
           </div>
         )}
 
         {!loading && state === "error" && (
           <div className="rounded-xl border p-4 text-sm">
-            Impossible de charger ce profil.
+            {t.profile.loadFailed}
           </div>
         )}
 
@@ -192,7 +194,7 @@ export default function UserProfileDialog({
               <div className="flex items-center justify-between rounded-xl border p-4">
                 <div className="flex items-center gap-2 text-sm">
                   <Globe className="h-4 w-4 text-muted-foreground" />
-                  <span className="font-medium">Site</span>
+                  <span className="font-medium">{t.settings.website}</span>
                 </div>
 
                 <a
@@ -208,7 +210,7 @@ export default function UserProfileDialog({
 
             {(profile.mail || profile.phone) && (
               <div className="rounded-xl border p-4 space-y-3">
-                <div className="text-sm font-semibold">Informations</div>
+                <div className="text-sm font-semibold">{t.settings.information}</div>
 
                 {profile.mail && (
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -232,7 +234,7 @@ export default function UserProfileDialog({
               !profile.mail &&
               !profile.phone && (
                 <div className="rounded-xl border p-4 text-sm text-muted-foreground">
-                  Aucune information disponible.
+                  {t.profile.noInfo}
                 </div>
               )}
           </div>
