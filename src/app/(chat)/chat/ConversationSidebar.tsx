@@ -11,7 +11,11 @@ import UserMenu from "@/components/user/UserMenu";
 import ConversationContextMenuItem from "@/components/chat/ConversationContextMenuItem";
 import { useI18n } from "@/lib/i18n";
 
-export default function ConversationSidebar() {
+export default function ConversationSidebar({
+  onClose,
+}: {
+  onClose?: () => void;
+}) {
   const [selectedId, setSelectedId] = useState<number | null>(null);
 
   const { username } = useAuth();
@@ -77,6 +81,7 @@ export default function ConversationSidebar() {
                       if (isSelected) return;
                       setSelectedId(c.id);
                       router.push(`/chat/${c.id}`);
+                      onClose?.();
                     }}
                     onBlocked={() => {
                       if (isSelected) {

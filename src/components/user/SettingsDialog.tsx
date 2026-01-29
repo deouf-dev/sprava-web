@@ -32,6 +32,7 @@ import {
   Globe,
   Users,
   LockKeyhole,
+  Menu,
 } from "lucide-react";
 import AvatarFromApi, { invalidateUserAvatarCache } from "./AvatarFromApi";
 
@@ -133,6 +134,7 @@ export default function SettingsDialog({
   const { t } = useI18n();
 
   const [tab, setTab] = useState<TabKey>("my_profile");
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const [me, setMe] = useState<MeResponse | null>(null);
   const [loadingMe, setLoadingMe] = useState(false);
@@ -171,6 +173,7 @@ export default function SettingsDialog({
       setError(null);
       setSuccess(null);
       setPassword("");
+      setIsSidebarOpen(false);
       return;
     }
   }, [open]);
@@ -404,18 +407,38 @@ export default function SettingsDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="p-0 sm:max-w-[920px]">
-        <div className="flex h-[600px] overflow-hidden rounded-md">
+        <div className="flex h-[600px] overflow-hidden rounded-md relative">
+          {/* Backdrop pour mobile */}
+          {isSidebarOpen && (
+            <div
+              className="fixed inset-0 bg-black/50 z-40 md:hidden"
+              onClick={() => setIsSidebarOpen(false)}
+            />
+          )}
+
           {/* Sidebar */}
-          <div className="w-[260px] shrink-0 border-r bg-muted/30 p-3">
+          <div
+            className={`
+              fixed inset-y-0 left-0 z-50 w-[260px] bg-muted/30 p-3 border-r
+              transform transition-transform duration-300 ease-in-out
+              ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}
+              md:relative md:translate-x-0 md:z-auto md:shrink-0
+            `}
+          >
             <div className="px-2 py-2">
               <div className="text-sm font-semibold">{t.settings.title}</div>
-              <div className="text-xs text-muted-foreground">{t.settings.subtitle}</div>
+              <div className="text-xs text-muted-foreground">
+                {t.settings.subtitle}
+              </div>
             </div>
 
             <div className="mt-2 space-y-1">
               <button
                 type="button"
-                onClick={() => setTab("my_profile")}
+                onClick={() => {
+                  setTab("my_profile");
+                  setIsSidebarOpen(false);
+                }}
                 className={cn(
                   "w-full flex items-center gap-2 rounded-xl px-3 py-2 text-left text-sm transition",
                   "hover:bg-muted/60",
@@ -428,7 +451,10 @@ export default function SettingsDialog({
 
               <button
                 type="button"
-                onClick={() => setTab("account")}
+                onClick={() => {
+                  setTab("account");
+                  setIsSidebarOpen(false);
+                }}
                 className={cn(
                   "w-full flex items-center gap-2 rounded-xl px-3 py-2 text-left text-sm transition",
                   "hover:bg-muted/60",
@@ -441,7 +467,10 @@ export default function SettingsDialog({
 
               <button
                 type="button"
-                onClick={() => setTab("security")}
+                onClick={() => {
+                  setTab("security");
+                  setIsSidebarOpen(false);
+                }}
                 className={cn(
                   "w-full flex items-center gap-2 rounded-xl px-3 py-2 text-left text-sm transition",
                   "hover:bg-muted/60",
@@ -454,7 +483,10 @@ export default function SettingsDialog({
 
               <button
                 type="button"
-                onClick={() => setTab("blocked")}
+                onClick={() => {
+                  setTab("blocked");
+                  setIsSidebarOpen(false);
+                }}
                 className={cn(
                   "w-full flex items-center gap-2 rounded-xl px-3 py-2 text-left text-sm transition",
                   "hover:bg-muted/60",
@@ -468,8 +500,18 @@ export default function SettingsDialog({
           </div>
 
           {/* Content */}
-          <div className="flex-1 p-6 overflow-y-auto">
-            <DialogHeader className="space-y-1">
+          <div className="flex-1 p-6 overflow-y-auto relative">
+            {/* Bouton hamburger pour mobile */}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="absolute top-2 left-2 z-10 md:hidden"
+              onClick={() => setIsSidebarOpen(true)}
+            >
+              <Menu className="h-5 w-5" />
+            </Button>
+
+            <DialogHeader className="space-y-1 mt-12 md:mt-0">
               <DialogTitle>
                 {tab === "my_profile"
                   ? t.settings.myProfile
@@ -502,7 +544,9 @@ export default function SettingsDialog({
             )}
 
             {loadingMe ? (
-              <div className="text-sm text-muted-foreground">{t.common.loading}</div>
+              <div className="text-sm text-muted-foreground">
+                {t.common.loading}
+              </div>
             ) : (
               <>
                 {/* MON PROFIL */}
@@ -515,7 +559,9 @@ export default function SettingsDialog({
                         size={56}
                       />
                       <div className="flex-1">
-                        <div className="text-sm font-medium">{t.settings.avatar}</div>
+                        <div className="text-sm font-medium">
+                          {t.settings.avatar}
+                        </div>
                         <div className="mt-2 flex items-center gap-3">
                           <Input
                             type="file"
@@ -534,7 +580,9 @@ export default function SettingsDialog({
                     </div>
 
                     <div className="rounded-xl border p-4 space-y-4">
-                      <div className="text-sm font-semibold">{t.settings.information}</div>
+                      <div className="text-sm font-semibold">
+                        {t.settings.information}
+                      </div>
 
                       <div className="space-y-2">
                         <Label htmlFor="bio">{t.settings.bio}</Label>
@@ -550,7 +598,9 @@ export default function SettingsDialog({
 
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
-                          <Label htmlFor="location">{t.settings.location}</Label>
+                          <Label htmlFor="location">
+                            {t.settings.location}
+                          </Label>
                           <Input
                             id="location"
                             value={location}
@@ -581,11 +631,15 @@ export default function SettingsDialog({
                 {/* MON COMPTE */}
                 {tab === "account" && (
                   <div className="rounded-xl border p-4 space-y-4">
-                    <div className="text-sm font-semibold">{t.settings.account}</div>
+                    <div className="text-sm font-semibold">
+                      {t.settings.account}
+                    </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <Label htmlFor="username">{t.settings.usernameLabel}</Label>
+                        <Label htmlFor="username">
+                          {t.settings.usernameLabel}
+                        </Label>
                         <Input
                           id="username"
                           value={username}
@@ -606,7 +660,9 @@ export default function SettingsDialog({
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="dob">{t.settings.dateOfBirthLabel}</Label>
+                        <Label htmlFor="dob">
+                          {t.settings.dateOfBirthLabel}
+                        </Label>
                         <Input
                           id="dob"
                           type="date"
@@ -617,7 +673,9 @@ export default function SettingsDialog({
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="password">{t.settings.newPasswordLabel}</Label>
+                        <Label htmlFor="password">
+                          {t.settings.newPasswordLabel}
+                        </Label>
                         <Input
                           id="password"
                           type="password"
@@ -866,7 +924,9 @@ export default function SettingsDialog({
                               onClick={() => unblockUser(u.id)}
                               disabled={actingBlockedId === u.id}
                             >
-                              {actingBlockedId === u.id ? "…" : t.settings.unblock}
+                              {actingBlockedId === u.id
+                                ? "…"
+                                : t.settings.unblock}
                             </Button>
                           </div>
                         ))}
